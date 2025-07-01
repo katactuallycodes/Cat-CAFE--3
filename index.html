@@ -4,9 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Whiskers & Lattes - San Francisco Cat Cafe</title>
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    
+    <!-- Preload critical CSS -->
+    <link rel="preload" href="styles.css" as="style">
     <link rel="stylesheet" href="styles.css">
+    
+    <!-- Preload critical font files -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" as="style">
+    
+    <!-- Preload hero image -->
+    <link rel="preload" href="images/hero-bg.jpg" as="image" fetchpriority="high">
+    
+    <!-- Load fonts after preload -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- DNS prefetch for performance -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    
+    <!-- Meta tags for better SEO -->
+    <meta name="description" content="Whiskers & Lattes is San Francisco's premier cat cafe. Enjoy coffee and pastries while spending time with adorable cats available for adoption.">
+    <meta name="keywords" content="cat cafe, San Francisco cat cafe, cat adoption, coffee shop, Whiskers & Lattes">
 </head>
 <body>
     <header>
@@ -64,7 +88,7 @@
                     </div>
                 </div>
                 <div class="about-image">
-                    <img src="images/cat1.jpg" alt="Cat at cafe">
+                    <img src="images/cat1.jpg" alt="Cat at cafe" width="500" height="350" loading="eager">
                 </div>
             </div>
         </div>
@@ -78,7 +102,18 @@
             <div class="cat-gallery">
                 <div class="cat-card" data-cat-id="oliver">
                     <div class="cat-image">
-                        <img src="images/cat2.jpg" alt="Orange tabby cat">
+                        <!-- Using picture element for responsive images -->
+                        <picture>
+                            <!-- Use optimized version first -->
+                            <source srcset="images/optimized/medium/cat2.jpg" type="image/jpeg">
+                            <!-- Fallback to original -->
+                            <img src="images/optimized/thumbnail/cat2.jpg" 
+                                 data-src="images/cat2.jpg"
+                                 alt="Orange tabby cat" 
+                                 width="300" 
+                                 height="300" 
+                                 loading="lazy">
+                        </picture>
                     </div>
                     <div class="cat-info">
                         <h3>Oliver</h3>
@@ -87,9 +122,18 @@
                         <button class="cat-profile-btn">Learn More</button>
                     </div>
                 </div>
+                
                 <div class="cat-card" data-cat-id="luna">
                     <div class="cat-image">
-                        <img src="images/cat3.jpg" alt="Gray cat">
+                        <picture>
+                            <source srcset="images/optimized/medium/cat3.jpg" type="image/jpeg">
+                            <img src="images/optimized/thumbnail/cat3.jpg" 
+                                 data-src="images/cat3.jpg"
+                                 alt="Gray cat" 
+                                 width="300" 
+                                 height="300" 
+                                 loading="lazy">
+                        </picture>
                     </div>
                     <div class="cat-info">
                         <h3>Luna</h3>
@@ -98,9 +142,18 @@
                         <button class="cat-profile-btn">Learn More</button>
                     </div>
                 </div>
+                
                 <div class="cat-card" data-cat-id="mochi">
                     <div class="cat-image">
-                        <img src="images/cat4.jpg" alt="Calico cat">
+                        <picture>
+                            <source srcset="images/optimized/medium/cat4.jpg" type="image/jpeg">
+                            <img src="images/optimized/thumbnail/cat4.jpg" 
+                                 data-src="images/cat4.jpg"
+                                 alt="Calico cat" 
+                                 width="300" 
+                                 height="300" 
+                                 loading="lazy">
+                        </picture>
                     </div>
                     <div class="cat-info">
                         <h3>Mochi</h3>
@@ -109,9 +162,18 @@
                         <button class="cat-profile-btn">Learn More</button>
                     </div>
                 </div>
+                
                 <div class="cat-card" data-cat-id="shadow">
                     <div class="cat-image">
-                        <img src="images/cat5.jpg" alt="Black cat">
+                        <picture>
+                            <source srcset="images/optimized/medium/cat5.jpg" type="image/jpeg">
+                            <img src="images/optimized/thumbnail/cat5.jpg" 
+                                 data-src="images/cat5.jpg"
+                                 alt="Black cat" 
+                                 width="300" 
+                                 height="300" 
+                                 loading="lazy">
+                        </picture>
                     </div>
                     <div class="cat-info">
                         <h3>Shadow</h3>
@@ -124,7 +186,15 @@
                 <!-- New Cats -->
                 <div class="cat-card" data-cat-id="bella">
                     <div class="cat-image">
-                        <img src="images/cat6.jpg" alt="Siamese cat">
+                        <picture>
+                            <source srcset="images/optimized/medium/cat6.jpg" type="image/jpeg">
+                            <img src="images/optimized/thumbnail/cat6.jpg" 
+                                 data-src="images/cat6.jpg"
+                                 alt="Siamese cat" 
+                                 width="300" 
+                                 height="300" 
+                                 loading="lazy">
+                        </picture>
                     </div>
                     <div class="cat-info">
                         <h3>Bella</h3>
@@ -136,7 +206,15 @@
                 
                 <div class="cat-card" data-cat-id="simba">
                     <div class="cat-image">
-                        <img src="images/cat7.jpg" alt="Maine Coon cat">
+                        <picture>
+                            <source srcset="images/optimized/medium/cat7.jpg" type="image/jpeg">
+                            <img src="images/optimized/thumbnail/cat7.jpg" 
+                                 data-src="images/cat7.jpg"
+                                 alt="Maine Coon cat" 
+                                 width="300" 
+                                 height="300" 
+                                 loading="lazy">
+                        </picture>
                     </div>
                     <div class="cat-info">
                         <h3>Simba</h3>
@@ -148,7 +226,15 @@
                 
                 <div class="cat-card" data-cat-id="pepper">
                     <div class="cat-image">
-                        <img src="images/cat8.jpg" alt="Tuxedo cat">
+                        <picture>
+                            <source srcset="images/optimized/medium/cat8.jpg" type="image/jpeg">
+                            <img src="images/optimized/thumbnail/cat8.jpg" 
+                                 data-src="images/cat8.jpg"
+                                 alt="Tuxedo cat" 
+                                 width="300" 
+                                 height="300" 
+                                 loading="lazy">
+                        </picture>
                     </div>
                     <div class="cat-info">
                         <h3>Pepper</h3>
@@ -160,19 +246,35 @@
                 
                 <div class="cat-card" data-cat-id="leo">
                     <div class="cat-image">
-                        <img src="images/cat9.jpg" alt="Ginger cat">
+                        <picture>
+                            <source srcset="images/optimized/medium/cat9.jpg" type="image/jpeg">
+                            <img src="images/optimized/thumbnail/cat9.jpg" 
+                                 data-src="images/cat9.jpg"
+                                 alt="Ginger cat" 
+                                 width="300" 
+                                 height="300" 
+                                 loading="lazy">
+                        </picture>
                     </div>
                     <div class="cat-info">
                         <h3>Leo</h3>
                         <p>1 year old • Male</p>
-                        <p>Adventurous and curious</p>
+                        <p>Curious and adventurous</p>
                         <button class="cat-profile-btn">Learn More</button>
                     </div>
                 </div>
                 
                 <div class="cat-card" data-cat-id="coco">
                     <div class="cat-image">
-                        <img src="images/cat10.jpg" alt="Chocolate brown cat">
+                        <picture>
+                            <source srcset="images/optimized/medium/cat10.jpg" type="image/jpeg">
+                            <img src="images/optimized/thumbnail/cat10.jpg" 
+                                 data-src="images/cat10.jpg"
+                                 alt="Chocolate brown cat" 
+                                 width="300" 
+                                 height="300" 
+                                 loading="lazy">
+                        </picture>
                     </div>
                     <div class="cat-info">
                         <h3>Coco</h3>
@@ -184,7 +286,15 @@
                 
                 <div class="cat-card" data-cat-id="ziggy">
                     <div class="cat-image">
-                        <img src="images/cat11.jpg" alt="Bengal cat">
+                        <picture>
+                            <source srcset="images/optimized/medium/cat11.jpg" type="image/jpeg">
+                            <img src="images/optimized/thumbnail/cat11.jpg" 
+                                 data-src="images/cat11.jpg"
+                                 alt="Bengal cat" 
+                                 width="300" 
+                                 height="300" 
+                                 loading="lazy">
+                        </picture>
                     </div>
                     <div class="cat-info">
                         <h3>Ziggy</h3>
@@ -196,7 +306,15 @@
                 
                 <div class="cat-card" data-cat-id="lily">
                     <div class="cat-image">
-                        <img src="images/cat12.jpg" alt="White cat">
+                        <picture>
+                            <source srcset="images/optimized/medium/cat12.jpg" type="image/jpeg">
+                            <img src="images/optimized/thumbnail/cat12.jpg" 
+                                 data-src="images/cat12.jpg"
+                                 alt="White cat" 
+                                 width="300" 
+                                 height="300" 
+                                 loading="lazy">
+                        </picture>
                     </div>
                     <div class="cat-info">
                         <h3>Lily</h3>
@@ -843,6 +961,8 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Scripts -->
+    <script src="script.js" defer></script>
+    <script src="optimize-images.js" defer></script>
 </body>
 </html> 

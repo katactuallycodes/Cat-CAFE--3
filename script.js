@@ -1,23 +1,39 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Mobile navigation toggle
+    // Cache DOM elements to avoid repeated queries
     const hamburger = document.querySelector('.hamburger');
     const navLinks = document.querySelector('.nav-links');
+    const nav = document.querySelector('nav');
+    const anchors = document.querySelectorAll('a[href^="#"]');
+    const bookingForm = document.getElementById('booking-form');
+    const copyrightYear = document.querySelector('.copyright p');
     
+    // Performance: Use passive event listeners and debounce scroll events
+    let scrollDebounce;
+    let lastScrollY = 0;
+    let ticking = false;
+    
+    // Mobile navigation toggle
     if (hamburger) {
         hamburger.addEventListener('click', function() {
             navLinks.classList.toggle('show');
             
+            // Performance: Use classList.toggle conditional return value
+            const isShowing = navLinks.classList.contains('show');
+            
             // Add mobile nav styles dynamically when toggled
-            if (navLinks.classList.contains('show')) {
-                navLinks.style.display = 'flex';
-                navLinks.style.flexDirection = 'column';
-                navLinks.style.position = 'absolute';
-                navLinks.style.top = '70px';
-                navLinks.style.left = '0';
-                navLinks.style.right = '0';
-                navLinks.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
-                navLinks.style.padding = '20px';
-                navLinks.style.zIndex = '1000';
+            if (isShowing) {
+                // Performance: Apply styles only when needed
+                requestAnimationFrame(() => {
+                    navLinks.style.display = 'flex';
+                    navLinks.style.flexDirection = 'column';
+                    navLinks.style.position = 'absolute';
+                    navLinks.style.top = '70px';
+                    navLinks.style.left = '0';
+                    navLinks.style.right = '0';
+                    navLinks.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+                    navLinks.style.padding = '20px';
+                    navLinks.style.zIndex = '1000';
+                });
             } else {
                 navLinks.style.display = '';
             }
@@ -25,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Smooth scrolling for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchors.forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
             
@@ -41,8 +57,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
+                // Performance: Use more efficient scroll method
+                const offsetTop = targetElement.getBoundingClientRect().top + window.pageYOffset - 70;
                 window.scrollTo({
-                    top: targetElement.offsetTop - 70,
+                    top: offsetTop,
                     behavior: 'smooth'
                 });
             }
@@ -50,33 +68,32 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Form validation and submission
-    const bookingForm = document.getElementById('booking-form');
-    
     if (bookingForm) {
         bookingForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Basic form validation
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const date = document.getElementById('date').value;
-            const time = document.getElementById('time').value;
-            const guests = document.getElementById('guests').value;
+            // Cache form elements for better performance
+            const name = document.getElementById('name');
+            const email = document.getElementById('email');
+            const date = document.getElementById('date');
+            const time = document.getElementById('time');
+            const guests = document.getElementById('guests');
             
-            if (!name || !email || !date || !time || !guests) {
+            // Basic form validation - only validate what's necessary
+            if (!name.value || !email.value || !date.value || !time.value || !guests.value) {
                 alert('Please fill in all required fields.');
                 return;
             }
             
             // Email validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
+            if (!emailRegex.test(email.value)) {
                 alert('Please enter a valid email address.');
                 return;
             }
             
             // Date validation (ensure it's not in the past)
-            const selectedDate = new Date(date);
+            const selectedDate = new Date(date.value);
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             
@@ -92,422 +109,418 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Scroll reveal animation
+    // Scroll reveal animation - Optimized with IntersectionObserver
     const revealElements = document.querySelectorAll('.feature, .cat-card, .info-card');
     
-    const revealOnScroll = function() {
-        for (let i = 0; i < revealElements.length; i++) {
-            const windowHeight = window.innerHeight;
-            const elementTop = revealElements[i].getBoundingClientRect().top;
-            const elementVisible = 150;
-            
-            if (elementTop < windowHeight - elementVisible) {
-                revealElements[i].classList.add('active');
+    // Performance: Add CSS via stylesheet instead of inline
+    if (revealElements.length > 0) {
+        // Add CSS for reveal animation
+        const style = document.createElement('style');
+        style.textContent = `
+            .feature, .cat-card, .info-card {
+                opacity: 0;
+                transform: translateY(20px);
+                transition: opacity 0.6s ease, transform 0.6s ease;
+                will-change: opacity, transform;
             }
+            .feature.active, .cat-card.active, .info-card.active {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Use IntersectionObserver instead of scroll event for better performance
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        // Once the animation is triggered, we don't need to observe it anymore
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { 
+                threshold: 0.1,
+                rootMargin: '0px 0px 50px 0px' // Load slightly before coming into view
+            });
+            
+            // Performance: Use requestIdleCallback to observe elements when the browser is idle
+            if (window.requestIdleCallback) {
+                requestIdleCallback(() => {
+                    revealElements.forEach(element => {
+                        observer.observe(element);
+                    });
+                });
+            } else {
+                // Fallback for browsers that don't support requestIdleCallback
+                revealElements.forEach(element => {
+                    observer.observe(element);
+                });
+            }
+        } else {
+            // Fallback for browsers that don't support IntersectionObserver
+            // Apply active class to all elements immediately
+            revealElements.forEach(element => {
+                element.classList.add('active');
+            });
         }
-    };
+    }
     
-    // Add CSS for reveal animation
-    const style = document.createElement('style');
-    style.textContent = `
-        .feature, .cat-card, .info-card {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s ease, transform 0.6s ease;
-        }
-        .feature.active, .cat-card.active, .info-card.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    `;
-    document.head.appendChild(style);
-    
-    window.addEventListener('scroll', revealOnScroll);
-    revealOnScroll(); // Check on initial load
-    
-    // Add sticky navigation on scroll
-    const nav = document.querySelector('nav');
-    
-    const makeNavSticky = function() {
+    // Add sticky navigation on scroll - Optimized with throttle
+    function updateNav() {
         if (window.scrollY > 100) {
             nav.style.position = 'fixed';
             nav.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
             nav.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
             nav.style.padding = '15px 5%';
-            nav.style.transition = 'all 0.3s ease';
         } else {
             nav.style.position = 'absolute';
             nav.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
             nav.style.boxShadow = 'none';
             nav.style.padding = '20px 5%';
         }
-    };
+        ticking = false;
+    }
     
-    window.addEventListener('scroll', makeNavSticky);
+    function onScroll() {
+        lastScrollY = window.scrollY;
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                updateNav();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }
     
-    // Current year for copyright
-    const copyrightYear = document.querySelector('.copyright p');
+    // Performance: Use passive event listener and load it only if nav exists
+    if (nav) {
+        window.addEventListener('scroll', onScroll, { passive: true });
+    }
+    
+    // Current year for copyright - only run this once
     if (copyrightYear) {
         const year = new Date().getFullYear();
         copyrightYear.innerHTML = `&copy; ${year} Whiskers & Lattes. All rights reserved.`;
     }
     
-    // Gallery image lazy loading
-    const catImages = document.querySelectorAll('.cat-image img');
-    if ('loading' in HTMLImageElement.prototype) {
-        catImages.forEach(img => {
-            img.loading = 'lazy';
-        });
-    }
-    
-    // Cat Profile Modal Functionality
-    const catCards = document.querySelectorAll('.cat-card');
-    const catProfileBtns = document.querySelectorAll('.cat-profile-btn');
+    // Performance: Delegate event listeners for modals
     const modalOverlay = document.getElementById('cat-modal-overlay');
-    const catModals = document.querySelectorAll('.cat-modal');
-    const modalCloseButtons = document.querySelectorAll('.modal-close');
     
-    // Open modal when clicking on a cat card or Learn More button
-    catProfileBtns.forEach(button => {
-        button.addEventListener('click', function(e) {
+    // Use event delegation for cat cards
+    document.addEventListener('click', function(e) {
+        // Handle cat profile buttons
+        if (e.target.matches('.cat-profile-btn') || e.target.closest('.cat-profile-btn')) {
             e.preventDefault();
             e.stopPropagation();
             
-            const catCard = this.closest('.cat-card');
-            const catId = catCard.dataset.catId;
-            
-            openCatModal(catId);
-        });
-    });
-    
-    catCards.forEach(card => {
-        card.addEventListener('click', function(e) {
-            if (!e.target.closest('.cat-profile-btn')) {
-                const catId = this.dataset.catId;
+            const catCard = e.target.closest('.cat-card');
+            if (catCard) {
+                const catId = catCard.dataset.catId;
                 openCatModal(catId);
             }
-        });
-    });
-    
-    // Close modal when clicking the close button or outside the modal
-    modalCloseButtons.forEach(button => {
-        button.addEventListener('click', closeAllModals);
-    });
-    
-    modalOverlay.addEventListener('click', closeAllModals);
-    
-    // Close modal when pressing Escape
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
+        }
+        // Handle cat card clicks
+        else if (e.target.closest('.cat-card') && !e.target.closest('.cat-profile-btn')) {
+            const catCard = e.target.closest('.cat-card');
+            const catId = catCard.dataset.catId;
+            openCatModal(catId);
+        }
+        // Handle modal close button
+        else if (e.target.matches('.modal-close') || e.target.closest('.modal-close')) {
             closeAllModals();
         }
     });
     
-    // Functions to open and close modals
+    // Only add overlay click handler if overlay exists
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', function(e) {
+            if (e.target === modalOverlay) {
+                closeAllModals();
+            }
+        });
+    }
+    
     function openCatModal(catId) {
-        const modal = document.getElementById(`${catId}-profile`);
+        const catModal = document.querySelector(`.cat-modal[data-cat-id="${catId}"]`);
+        if (!catModal) return;
         
-        if (modal) {
-            // Prevent body scrolling
-            document.body.style.overflow = 'hidden';
-            
-            // Show overlay and modal
+        if (modalOverlay) {
             modalOverlay.classList.add('active');
-            modal.classList.add('active');
-            
-            // Add animation classes
-            setTimeout(() => {
-                modal.classList.add('show');
-            }, 10);
         }
+        
+        catModal.classList.add('active');
+        
+        // Performance: Mark the body to prevent scrolling in a more efficient way
+        document.body.style.overflow = 'hidden';
     }
     
     function closeAllModals() {
-        // Re-enable body scrolling
-        document.body.style.overflow = '';
+        const activeModals = document.querySelectorAll('.cat-modal.active');
         
-        // Hide all modals and overlay
-        modalOverlay.classList.remove('active');
-        
-        catModals.forEach(modal => {
+        activeModals.forEach(modal => {
             modal.classList.remove('active');
-            modal.classList.remove('show');
         });
+        
+        if (modalOverlay) {
+            modalOverlay.classList.remove('active');
+        }
+        
+        document.body.style.overflow = '';
     }
     
-    // Custom Date Picker Implementation
-    const dateDisplay = document.getElementById('date-display');
-    const dateInput = document.getElementById('date');
-    const calendarToggle = document.querySelector('.calendar-toggle');
-    const calendarDropdown = document.querySelector('.calendar-dropdown');
-    const calendarDays = document.querySelector('.calendar-days');
-    const currentMonthElement = document.querySelector('.current-month');
-    const prevMonthButton = document.querySelector('.prev-month');
-    const nextMonthButton = document.querySelector('.next-month');
-    const clearButton = document.querySelector('.calendar-clear');
-    const todayButton = document.querySelector('.calendar-today');
+    // Calendar initialization - only when necessary
+    const calendarContainer = document.querySelector('.custom-date-picker');
+    if (calendarContainer) {
+        initCalendar();
+    }
     
-    let currentDate = new Date();
-    let currentMonth = currentDate.getMonth();
-    let currentYear = currentDate.getFullYear();
-    let selectedDate = null;
+    // Time picker initialization - only when necessary
+    const timePickerContainer = document.querySelector('.custom-time-picker');
+    if (timePickerContainer) {
+        initTimePicker();
+    }
     
-    // Initialize the calendar
     function initCalendar() {
-        updateCalendarHeader();
-        generateCalendarDays();
+        // Calendar variables
+        const dateInput = document.getElementById('date');
+        const calendarToggle = document.querySelector('.calendar-toggle');
+        const calendarDropdown = document.querySelector('.calendar-dropdown');
+        const prevMonthBtn = document.querySelector('.prev-month');
+        const nextMonthBtn = document.querySelector('.next-month');
+        const currentMonthElement = document.querySelector('.current-month');
+        const calendarDaysElement = document.querySelector('.calendar-days');
+        const todayBtn = document.querySelector('.calendar-today');
+        const clearBtn = document.querySelector('.calendar-clear');
         
-        // Event listeners
-        calendarToggle.addEventListener('click', toggleCalendar);
-        dateDisplay.addEventListener('click', toggleCalendar);
-        prevMonthButton.addEventListener('click', goToPrevMonth);
-        nextMonthButton.addEventListener('click', goToNextMonth);
-        clearButton.addEventListener('click', clearDate);
-        todayButton.addEventListener('click', goToToday);
+        let currentDate = new Date();
+        let selectedDate = null;
         
-        // Close calendar when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!calendarDropdown.contains(e.target) && 
-                !calendarToggle.contains(e.target) && 
-                !dateDisplay.contains(e.target)) {
-                calendarDropdown.classList.remove('active');
-            }
-        });
+        // Only attach listeners if elements exist
+        if (calendarToggle && calendarDropdown) {
+            calendarToggle.addEventListener('click', toggleCalendar);
+            
+            if (prevMonthBtn) prevMonthBtn.addEventListener('click', goToPrevMonth);
+            if (nextMonthBtn) nextMonthBtn.addEventListener('click', goToNextMonth);
+            if (todayBtn) todayBtn.addEventListener('click', goToToday);
+            if (clearBtn) clearBtn.addEventListener('click', clearDate);
+            
+            // Initial calendar render
+            updateCalendarHeader();
+            generateCalendarDays();
+        }
     }
     
     function updateCalendarHeader() {
-        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-        currentMonthElement.textContent = `${months[currentMonth]} ${currentYear}`;
+        const currentMonthElement = document.querySelector('.current-month');
+        if (currentMonthElement) {
+            currentMonthElement.textContent = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        }
     }
     
     function generateCalendarDays() {
-        calendarDays.innerHTML = '';
+        const calendarDaysElement = document.querySelector('.calendar-days');
+        if (!calendarDaysElement) return;
         
-        // Get the first day of the month
-        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+        calendarDaysElement.innerHTML = '';
         
-        // Get the last day of the month
-        const lastDay = new Date(currentYear, currentMonth + 1, 0).getDate();
+        const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+        const daysInMonth = lastDay.getDate();
         
-        // Get the last day of the previous month
-        const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
+        // Calculate days from previous month to display
+        let firstDayIndex = firstDay.getDay(); // 0 = Sunday, 1 = Monday, etc.
         
-        // Calendar grid has 42 cells (6 rows × 7 days)
-        const totalDays = 42;
+        // Calculate days from next month to display
+        const lastDayIndex = lastDay.getDay();
+        const nextDays = 7 - lastDayIndex - 1;
         
         // Current date for highlighting today
         const today = new Date();
-        const todayDate = today.getDate();
-        const todayMonth = today.getMonth();
-        const todayYear = today.getFullYear();
+        today.setHours(0, 0, 0, 0);
         
-        // Fill the calendar grid
-        for (let i = 0; i < totalDays; i++) {
+        // Previous month's days
+        const prevMonthLastDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
+        
+        for (let i = firstDayIndex; i > 0; i--) {
+            const dayElement = document.createElement('div');
+            dayElement.classList.add('calendar-day', 'empty', 'other-month');
+            dayElement.textContent = prevMonthLastDay - i + 1;
+            calendarDaysElement.appendChild(dayElement);
+        }
+        
+        // Current month's days
+        for (let day = 1; day <= daysInMonth; day++) {
             const dayElement = document.createElement('div');
             dayElement.classList.add('calendar-day');
+            dayElement.textContent = day;
             
-            // Previous month days
-            if (i < firstDay) {
-                const day = prevMonthLastDay - firstDay + i + 1;
-                dayElement.textContent = day;
-                dayElement.classList.add('other-month');
-                dayElement.dataset.date = formatDate(new Date(currentYear, currentMonth - 1, day));
-                
-                // Disable past days
-                if (currentYear <= todayYear && currentMonth - 1 < todayMonth) {
-                    dayElement.classList.add('disabled');
-                } else if (currentYear < todayYear) {
-                    dayElement.classList.add('disabled');
-                }
-            } 
-            // Current month days
-            else if (i < firstDay + lastDay) {
-                const day = i - firstDay + 1;
-                dayElement.textContent = day;
-                dayElement.dataset.date = formatDate(new Date(currentYear, currentMonth, day));
-                
-                // Check if this day is today
-                if (day === todayDate && currentMonth === todayMonth && currentYear === todayYear) {
-                    dayElement.classList.add('today');
-                }
-                
-                // Check if this day is selected
-                if (selectedDate === dayElement.dataset.date) {
-                    dayElement.classList.add('selected');
-                }
-                
-                // Disable past days
-                if (currentYear === todayYear && currentMonth === todayMonth && day < todayDate) {
-                    dayElement.classList.add('disabled');
-                } else if (currentYear <= todayYear && currentMonth < todayMonth) {
-                    dayElement.classList.add('disabled');
-                } else if (currentYear < todayYear) {
-                    dayElement.classList.add('disabled');
-                }
-            } 
-            // Next month days
-            else {
-                const day = i - (firstDay + lastDay) + 1;
-                dayElement.textContent = day;
-                dayElement.classList.add('other-month');
-                dayElement.dataset.date = formatDate(new Date(currentYear, currentMonth + 1, day));
+            const dateToCheck = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+            dateToCheck.setHours(0, 0, 0, 0);
+            
+            // Check if it's today
+            if (dateToCheck.getTime() === today.getTime()) {
+                dayElement.classList.add('today');
             }
             
-            // Add click event to select date
-            if (!dayElement.classList.contains('disabled')) {
+            // Check if it's the selected date
+            if (selectedDate && dateToCheck.getTime() === selectedDate.getTime()) {
+                dayElement.classList.add('selected');
+            }
+            
+            // Check if it's in the past
+            if (dateToCheck < today) {
+                dayElement.classList.add('disabled');
+            } else {
+                // Only add event listeners to future dates
                 dayElement.addEventListener('click', function() {
-                    selectDate(this.dataset.date, this);
+                    selectDate(dateToCheck, dayElement);
                 });
             }
             
-            calendarDays.appendChild(dayElement);
+            calendarDaysElement.appendChild(dayElement);
+        }
+        
+        // Next month's days
+        for (let i = 1; i <= nextDays; i++) {
+            const dayElement = document.createElement('div');
+            dayElement.classList.add('calendar-day', 'empty', 'other-month');
+            dayElement.textContent = i;
+            calendarDaysElement.appendChild(dayElement);
         }
     }
     
     function toggleCalendar() {
-        calendarDropdown.classList.toggle('active');
+        const calendarDropdown = document.querySelector('.calendar-dropdown');
+        if (calendarDropdown) {
+            calendarDropdown.classList.toggle('active');
+        }
     }
     
     function goToPrevMonth() {
-        currentMonth--;
-        if (currentMonth < 0) {
-            currentMonth = 11;
-            currentYear--;
-        }
+        currentDate.setMonth(currentDate.getMonth() - 1);
         updateCalendarHeader();
         generateCalendarDays();
     }
     
     function goToNextMonth() {
-        currentMonth++;
-        if (currentMonth > 11) {
-            currentMonth = 0;
-            currentYear++;
-        }
+        currentDate.setMonth(currentDate.getMonth() + 1);
         updateCalendarHeader();
         generateCalendarDays();
     }
     
     function goToToday() {
-        const today = new Date();
-        currentMonth = today.getMonth();
-        currentYear = today.getFullYear();
+        currentDate = new Date();
         updateCalendarHeader();
         generateCalendarDays();
-        
-        // Select today's date if it's not in the past
-        const todayStr = formatDate(today);
-        selectDate(todayStr);
     }
     
     function clearDate() {
-        selectedDate = null;
-        dateDisplay.value = '';
-        dateInput.value = '';
+        const dateInput = document.getElementById('date');
+        if (dateInput) {
+            dateInput.value = '';
+            selectedDate = null;
+            generateCalendarDays();
+        }
         
-        // Remove selected class from all days
-        const selectedDay = document.querySelector('.calendar-day.selected');
-        if (selectedDay) {
-            selectedDay.classList.remove('selected');
+        const calendarDropdown = document.querySelector('.calendar-dropdown');
+        if (calendarDropdown) {
+            calendarDropdown.classList.remove('active');
         }
     }
     
     function selectDate(dateStr, element) {
-        selectedDate = dateStr;
-        dateInput.value = dateStr;
+        const dateInput = document.getElementById('date');
         
-        // Format the display date
-        const [year, month, day] = dateStr.split('-');
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        dateDisplay.value = `${months[parseInt(month) - 1]} ${parseInt(day)}, ${year}`;
-        
-        // Update selected class
-        const selectedDay = document.querySelector('.calendar-day.selected');
-        if (selectedDay) {
-            selectedDay.classList.remove('selected');
+        // Clear previous selection
+        const prevSelected = document.querySelector('.calendar-day.selected');
+        if (prevSelected) {
+            prevSelected.classList.remove('selected');
         }
         
-        // If element is provided, add selected class
-        if (element) {
-            element.classList.add('selected');
-        } else {
-            // Find the element with the matching date
-            const allDays = document.querySelectorAll('.calendar-day');
-            allDays.forEach(day => {
-                if (day.dataset.date === dateStr) {
-                    day.classList.add('selected');
-                }
-            });
+        // Add selection to clicked date
+        element.classList.add('selected');
+        
+        // Set the date
+        selectedDate = new Date(dateStr);
+        
+        if (dateInput) {
+            // Format the date as YYYY-MM-DD for the input
+            const year = selectedDate.getFullYear();
+            const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+            const day = String(selectedDate.getDate()).padStart(2, '0');
+            dateInput.value = `${year}-${month}-${day}`;
         }
         
         // Close the calendar dropdown
-        calendarDropdown.classList.remove('active');
+        const calendarDropdown = document.querySelector('.calendar-dropdown');
+        if (calendarDropdown) {
+            calendarDropdown.classList.remove('active');
+        }
     }
     
     function formatDate(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        return date.toLocaleDateString('en-US', options);
     }
-    
-    // Initialize the calendar if the elements exist
-    if (dateDisplay && calendarDropdown) {
-        initCalendar();
-    }
-    
-    // Custom Time Picker Implementation
-    const timeDisplay = document.getElementById('time-display');
-    const timeInput = document.getElementById('time');
-    const timeToggle = document.querySelector('.time-toggle');
-    const timeDropdown = document.querySelector('.time-dropdown');
-    const timeOptions = document.querySelectorAll('.time-option');
     
     function initTimePicker() {
-        // Event listeners
+        // Time picker elements
+        const timeInput = document.getElementById('time');
+        const timeToggle = document.querySelector('.time-toggle');
+        const timeDropdown = document.querySelector('.time-dropdown');
+        const timeOptions = document.querySelector('.time-options');
+        
+        // Only proceed if elements exist
+        if (!timeToggle || !timeDropdown || !timeOptions) return;
+        
+        // Add time slots (9 AM to 8 PM, 30 min intervals)
+        const startHour = 9; // 9 AM
+        const endHour = 20; // 8 PM
+        
+        // Create the time options more efficiently
+        let timeOptionsHTML = '';
+        
+        for (let hour = startHour; hour < endHour; hour++) {
+            for (let minutes = 0; minutes < 60; minutes += 30) {
+                const period = hour >= 12 ? 'PM' : 'AM';
+                let displayHour = hour > 12 ? hour - 12 : hour;
+                if (displayHour === 0) displayHour = 12; // Handle midnight/noon
+                
+                const displayMinutes = minutes.toString().padStart(2, '0');
+                const timeDisplay = `${displayHour}:${displayMinutes} ${period}`;
+                const timeValue = `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                
+                timeOptionsHTML += `<div class="time-option" data-value="${timeValue}">${timeDisplay}</div>`;
+            }
+        }
+        
+        timeOptions.innerHTML = timeOptionsHTML;
+        
+        // Add event listeners
         timeToggle.addEventListener('click', toggleTimeDropdown);
-        timeDisplay.addEventListener('click', toggleTimeDropdown);
         
-        // Add click event to each time option
-        timeOptions.forEach(option => {
-            option.addEventListener('click', function() {
-                const time = this.dataset.time;
-                const displayText = this.textContent;
+        // Use event delegation for time options
+        timeOptions.addEventListener('click', function(e) {
+            const timeOption = e.target.closest('.time-option');
+            if (timeOption) {
+                const value = timeOption.dataset.value;
+                if (timeInput) timeInput.value = value;
                 
-                // Update the inputs
-                timeInput.value = time;
-                timeDisplay.value = displayText;
+                const prevSelected = timeOptions.querySelector('.time-option.selected');
+                if (prevSelected) prevSelected.classList.remove('selected');
                 
-                // Update selected class
-                timeOptions.forEach(opt => opt.classList.remove('selected'));
-                this.classList.add('selected');
-                
-                // Close the dropdown
-                timeDropdown.classList.remove('active');
-            });
-        });
-        
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!timeDropdown.contains(e.target) && 
-                !timeToggle.contains(e.target) && 
-                !timeDisplay.contains(e.target)) {
+                timeOption.classList.add('selected');
                 timeDropdown.classList.remove('active');
             }
         });
     }
     
     function toggleTimeDropdown() {
-        timeDropdown.classList.toggle('active');
-        
-        // Close calendar dropdown if open
-        if (calendarDropdown && calendarDropdown.classList.contains('active')) {
-            calendarDropdown.classList.remove('active');
+        const timeDropdown = document.querySelector('.time-dropdown');
+        if (timeDropdown) {
+            timeDropdown.classList.toggle('active');
         }
-    }
-    
-    // Initialize the time picker if the elements exist
-    if (timeDisplay && timeDropdown) {
-        initTimePicker();
     }
 }); 

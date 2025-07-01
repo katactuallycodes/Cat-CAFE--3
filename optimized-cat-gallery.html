@@ -1,0 +1,249 @@
+<!-- OPTIMIZED CAT GALLERY -->
+<!-- Replace the existing cat gallery in index.html with this optimized version -->
+<section id="cats" class="cats-section">
+    <div class="container">
+        <h2>Meet Our Cats</h2>
+        <p class="section-desc">All of our feline friends are available for adoption. Fall in love with one? Ask our staff about the adoption process!</p>
+        
+        <div class="cat-gallery">
+            <div class="cat-card" data-cat-id="oliver">
+                <div class="cat-image">
+                    <!-- Using picture element for modern format support -->
+                    <picture>
+                        <!-- Try AVIF first for browsers that support it -->
+                        <source srcset="images/avif/cat2.avif" type="image/avif">
+                        <!-- Then try the optimized version -->
+                        <source srcset="images/optimized/medium/cat2.jpg" type="image/jpeg">
+                        <!-- Fallback to original -->
+                        <img src="images/optimized/thumbnail/cat2.jpg" 
+                             data-src="images/cat2.jpg"
+                             alt="Orange tabby cat" 
+                             width="300" 
+                             height="300" 
+                             loading="lazy">
+                    </picture>
+                </div>
+                <div class="cat-info">
+                    <h3>Oliver</h3>
+                    <p>3 years old • Male</p>
+                    <p>Playful and loves attention</p>
+                    <button class="cat-profile-btn">Learn More</button>
+                </div>
+            </div>
+            
+            <div class="cat-card" data-cat-id="luna">
+                <div class="cat-image">
+                    <picture>
+                        <source srcset="images/avif/cat3.avif" type="image/avif">
+                        <source srcset="images/optimized/medium/cat3.jpg" type="image/jpeg">
+                        <img src="images/optimized/thumbnail/cat3.jpg" 
+                             data-src="images/cat3.jpg"
+                             alt="Gray cat" 
+                             width="300" 
+                             height="300" 
+                             loading="lazy">
+                    </picture>
+                </div>
+                <div class="cat-info">
+                    <h3>Luna</h3>
+                    <p>2 years old • Female</p>
+                    <p>Sweet and gentle lap cat</p>
+                    <button class="cat-profile-btn">Learn More</button>
+                </div>
+            </div>
+            
+            <div class="cat-card" data-cat-id="mochi">
+                <div class="cat-image">
+                    <picture>
+                        <source srcset="images/avif/cat4.avif" type="image/avif">
+                        <source srcset="images/optimized/medium/cat4.jpg" type="image/jpeg">
+                        <img src="images/optimized/thumbnail/cat4.jpg" 
+                             data-src="images/cat4.jpg"
+                             alt="Calico cat" 
+                             width="300" 
+                             height="300" 
+                             loading="lazy">
+                    </picture>
+                </div>
+                <div class="cat-info">
+                    <h3>Mochi</h3>
+                    <p>1 year old • Female</p>
+                    <p>Energetic and curious</p>
+                    <button class="cat-profile-btn">Learn More</button>
+                </div>
+            </div>
+            
+            <div class="cat-card" data-cat-id="shadow">
+                <div class="cat-image">
+                    <picture>
+                        <source srcset="images/avif/cat5.avif" type="image/avif">
+                        <source srcset="images/optimized/medium/cat5.jpg" type="image/jpeg">
+                        <img src="images/optimized/thumbnail/cat5.jpg" 
+                             data-src="images/cat5.jpg"
+                             alt="Black cat" 
+                             width="300" 
+                             height="300" 
+                             loading="lazy">
+                    </picture>
+                </div>
+                <div class="cat-info">
+                    <h3>Shadow</h3>
+                    <p>4 years old • Male</p>
+                    <p>Calm and independent</p>
+                    <button class="cat-profile-btn">Learn More</button>
+                </div>
+            </div>
+            
+            <!-- New Cats -->
+            <div class="cat-card" data-cat-id="bella">
+                <div class="cat-image">
+                    <picture>
+                        <source srcset="images/avif/cat6.avif" type="image/avif">
+                        <source srcset="images/optimized/medium/cat6.jpg" type="image/jpeg">
+                        <img src="images/optimized/thumbnail/cat6.jpg" 
+                             data-src="images/cat6.jpg"
+                             alt="Siamese cat" 
+                             width="300" 
+                             height="300" 
+                             loading="lazy">
+                    </picture>
+                </div>
+                <div class="cat-info">
+                    <h3>Bella</h3>
+                    <p>2 years old • Female</p>
+                    <p>Talkative and affectionate</p>
+                    <button class="cat-profile-btn">Learn More</button>
+                </div>
+            </div>
+            
+            <div class="cat-card" data-cat-id="simba">
+                <div class="cat-image">
+                    <picture>
+                        <source srcset="images/avif/cat7.avif" type="image/avif">
+                        <source srcset="images/optimized/medium/cat7.jpg" type="image/jpeg">
+                        <img src="images/optimized/thumbnail/cat7.jpg" 
+                             data-src="images/cat7.jpg"
+                             alt="Maine Coon cat" 
+                             width="300" 
+                             height="300" 
+                             loading="lazy">
+                    </picture>
+                </div>
+                <div class="cat-info">
+                    <h3>Simba</h3>
+                    <p>5 years old • Male</p>
+                    <p>Majestic and friendly</p>
+                    <button class="cat-profile-btn">Learn More</button>
+                </div>
+            </div>
+            
+            <div class="cat-card" data-cat-id="pepper">
+                <div class="cat-image">
+                    <picture>
+                        <source srcset="images/avif/cat8.avif" type="image/avif">
+                        <source srcset="images/optimized/medium/cat8.jpg" type="image/jpeg">
+                        <img src="images/optimized/thumbnail/cat8.jpg" 
+                             data-src="images/cat8.jpg"
+                             alt="Tuxedo cat" 
+                             width="300" 
+                             height="300" 
+                             loading="lazy">
+                    </picture>
+                </div>
+                <div class="cat-info">
+                    <h3>Pepper</h3>
+                    <p>3 years old • Female</p>
+                    <p>Playful and sophisticated</p>
+                    <button class="cat-profile-btn">Learn More</button>
+                </div>
+            </div>
+            
+            <div class="cat-card" data-cat-id="leo">
+                <div class="cat-image">
+                    <picture>
+                        <source srcset="images/avif/cat9.avif" type="image/avif">
+                        <source srcset="images/optimized/medium/cat9.jpg" type="image/jpeg">
+                        <img src="images/optimized/thumbnail/cat9.jpg" 
+                             data-src="images/cat9.jpg"
+                             alt="Ginger cat" 
+                             width="300" 
+                             height="300" 
+                             loading="lazy">
+                    </picture>
+                </div>
+                <div class="cat-info">
+                    <h3>Leo</h3>
+                    <p>1 year old • Male</p>
+                    <p>Adventurous and curious</p>
+                    <button class="cat-profile-btn">Learn More</button>
+                </div>
+            </div>
+            
+            <div class="cat-card" data-cat-id="coco">
+                <div class="cat-image">
+                    <picture>
+                        <source srcset="images/avif/cat10.avif" type="image/avif">
+                        <source srcset="images/optimized/medium/cat10.jpg" type="image/jpeg">
+                        <img src="images/optimized/thumbnail/cat10.jpg" 
+                             data-src="images/cat10.jpg"
+                             alt="Chocolate brown cat" 
+                             width="300" 
+                             height="300" 
+                             loading="lazy">
+                    </picture>
+                </div>
+                <div class="cat-info">
+                    <h3>Coco</h3>
+                    <p>4 years old • Female</p>
+                    <p>Sweet and gentle</p>
+                    <button class="cat-profile-btn">Learn More</button>
+                </div>
+            </div>
+            
+            <div class="cat-card" data-cat-id="ziggy">
+                <div class="cat-image">
+                    <picture>
+                        <source srcset="images/avif/cat11.avif" type="image/avif">
+                        <source srcset="images/optimized/medium/cat11.jpg" type="image/jpeg">
+                        <img src="images/optimized/thumbnail/cat11.jpg" 
+                             data-src="images/cat11.jpg"
+                             alt="Bengal cat" 
+                             width="300" 
+                             height="300" 
+                             loading="lazy">
+                    </picture>
+                </div>
+                <div class="cat-info">
+                    <h3>Ziggy</h3>
+                    <p>3 years old • Male</p>
+                    <p>Energetic and athletic</p>
+                    <button class="cat-profile-btn">Learn More</button>
+                </div>
+            </div>
+            
+            <div class="cat-card" data-cat-id="lily">
+                <div class="cat-image">
+                    <picture>
+                        <source srcset="images/avif/cat12.avif" type="image/avif">
+                        <source srcset="images/optimized/medium/cat12.jpg" type="image/jpeg">
+                        <img src="images/optimized/thumbnail/cat12.jpg" 
+                             data-src="images/cat12.jpg"
+                             alt="White cat" 
+                             width="300" 
+                             height="300" 
+                             loading="lazy">
+                    </picture>
+                </div>
+                <div class="cat-info">
+                    <h3>Lily</h3>
+                    <p>2 years old • Female</p>
+                    <p>Elegant and poised</p>
+                    <button class="cat-profile-btn">Learn More</button>
+                </div>
+            </div>
+        </div>
+        <div class="centered-btn">
+            <a href="#contact" class="btn-primary">Inquire About Adoption</a>
+        </div>
+    </div>
+</section> 
